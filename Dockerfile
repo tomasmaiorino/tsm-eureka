@@ -5,7 +5,7 @@
 # Usage:
 #   docker build --force-rm -t <image_name> --build-arg branch_name=<branch_name> .
 # Container:
-#	docker create -p 8761 --name eureka eureka
+#	docker create -p 8761:8761 -v /home/tomas/.m2:/root/.m2 --name eureka eureka
 # **********************************************************************************************************************
 FROM maven:3-jdk-8-slim
 ARG branch_name
@@ -31,8 +31,9 @@ WORKDIR /app
 RUN git clone $APPLICATION_REPO
 WORKDIR /app/tsm-eureka
 RUN git checkout $branch_name
-RUN git pull origin $branch_name
-RUN mvn clean install
+#RUN git pull origin $branch_name
+# RUN mvn clean install
 EXPOSE 8761
-
+CMD ["git", "pull", "origin", $branch_name]
+CMD ["mvn", "clean", "install"]
 CMD ["mvn", "spring-boot:run"]
